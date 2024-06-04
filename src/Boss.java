@@ -23,7 +23,19 @@ public class Boss {
     public int gethp(){
         return health;
     }
+    public void minusHp(int hp){
+        health-=hp;
+    }
+    public void setHealth(int hp){
+        health = hp;
+    }
     public BufferedImage getbossImage(){
         return boss;
+    }
+    public Rectangle BossRect() {
+        int imageHeight = getbossImage().getHeight();
+        int imageWidth = getbossImage().getWidth();
+        Rectangle rect = new Rectangle(600, 200, imageWidth, imageHeight);
+        return rect;
     }
 }

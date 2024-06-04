@@ -7,7 +7,7 @@ import java.io.IOException;
 public class Player {
     private double health;
     private boolean alive;
-    private double MOVE_AMT = 2;
+    private double MOVE_AMT = 20;
     private BufferedImage right;
     private BufferedImage left;
     private boolean facingRight;
@@ -31,12 +31,20 @@ public class Player {
             System.out.println(e.getMessage());
         }
     }
-
+    public void setHealth(int hp){
+        health = hp;
+    }
+    public void MaxHealth(){
+        health = 100;
+    }
     public void minus(double hp){
         health-=hp;
         if(health<=0){
             alive = false;
         }
+    }
+    public int getHealth(){
+        return (int)health;
     }
     public boolean alive(){
         return alive;
@@ -52,7 +60,7 @@ public class Player {
         MOVE_AMT = 0.0;
     }
     public void yes(){
-        MOVE_AMT = 1.2;
+        MOVE_AMT = 20;
     }
 
     public int getScore() {
@@ -107,9 +115,6 @@ public class Player {
         }
     }
 
-    public void collectCoin() {
-        score++;
-    }
 
     public BufferedImage getPlayerImage() {
         if (facingRight) {
@@ -117,6 +122,9 @@ public class Player {
         } else {
             return left;
         }
+    }
+    public void heal(int hp){
+        health+=hp;
     }
 
     // we use a "bounding Rectangle" for detecting collision
