@@ -34,9 +34,6 @@ public class Player {
     public void setHealth(int hp){
         health = hp;
     }
-    public void MaxHealth(){
-        health = 100;
-    }
     public void minus(double hp){
         health-=hp;
         if(health<=0){
@@ -45,9 +42,6 @@ public class Player {
     }
     public int getHealth(){
         return (int)health;
-    }
-    public boolean alive(){
-        return alive;
     }
     public int getxCoord() {
         return (int) xCoord;
@@ -61,6 +55,9 @@ public class Player {
     }
     public void yes(){
         MOVE_AMT = 20;
+    }
+    public void setSpeed(int speed){
+        MOVE_AMT = speed;
     }
 
     public int getScore() {
@@ -86,6 +83,13 @@ public class Player {
     public void moveRight() {
         if (xCoord + MOVE_AMT <= 920) {
             xCoord += MOVE_AMT;
+        }
+    }
+    public boolean alive(){
+        if(health>0){
+            return true;
+        }else{
+            return false;
         }
     }
 

@@ -7,47 +7,52 @@ import java.io.File;
 import java.io.IOException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.Scanner;
 
 public class GraphicsPanel extends JPanel implements KeyListener, MouseListener, ActionListener {
-    private boolean won;
+    private boolean won,saw;
     private boolean lost;
 
     private boolean isFreezed;
     private int hp;private int hp1;
-    private Boss ez;private Boss ez1;
+    private Boss ez,ez1,ez2;
     private String name;
     private double note;
     private int num = 0;
     private Player player;
     private int click;
     private boolean[] pressedKeys;
-    private BufferedImage healthpot;private BufferedImage zmove;private BufferedImage stone; private BufferedImage slash; private BufferedImage background;private BufferedImage ball;private BufferedImage xmove;
+    private BufferedImage zmove,stone,slash,background,ball,xmove,blast;
     private Timer timer;
     private int time;
-    private int j;
-    private int p;
-    private boolean collected;
+    private int k,l,p,x=0,y=0,m=0,z=0,f=0,q=0;
     private JButton stop;
 
-    private boolean reset;
-
+    private boolean reset,reset2;
+    Scanner scan = new Scanner(System.in);
     public GraphicsPanel(String name) {
-        collected = false;
+        saw = false;
+        k=0;
+        l=0;
+        p=0;
         reset = false;
+        reset2 = false;
         this.name = name;
         click = 0;
         ez1 = new Boss("images/Boss2.png");
         ez = new Boss("images/Boss.png");
-        ez1.setHealth(6000);
+        ez2 = new Boss("images/Boss3.png");
+        ez2.setHealth(10000);
+        ez1.setHealth(8000);
         hp = ez.gethp();hp1 = ez1.gethp();
         won = false;
         lost = false;
         player = new Player("images/man1.png","images/man.png", name);
         try{
+            blast = ImageIO.read(new File("images/blast.png"));
             slash = ImageIO.read(new File("images/slash.png"));
             ball = ImageIO.read(new File("images/ball.png"));
             stone = ImageIO.read(new File("images/Stone.png"));
-            healthpot = ImageIO.read(new File("images/healthpot.png"));
             zmove = ImageIO.read(new File("images/zmove.png"));
             xmove = ImageIO.read(new File("images/xmove.png"));
         }catch(IOException e){
@@ -75,6 +80,7 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener,
     public void paintComponent(Graphics g) {
         super.paintComponent(g);  // just do this
         if (ez.gethp() > 0) {
+            player.yes();
             try{
                 background = ImageIO.read(new File("images/background1.png"));
             }catch(IOException e){
@@ -86,7 +92,7 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener,
             // and it also checks if the player has "intersected" (collided with) the Coin, and if so,
             // the score goes up and the Coin is removed from the arraylist
             if (player.playerRect().intersects(ez.BossRect())) {
-                player.minus(100);
+                player.setHealth(0);
             }
             if (hp > ez.gethp()) {
                 g.drawImage(slash, 500, 150, null);
@@ -98,21 +104,6 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener,
                 g.drawString("YOU LOSE!", 250, 300);
                 player.no();
                 won = true;
-            }
-            if(time%5 ==0){
-                collected = false;
-                p=5;
-            }
-            if(p==5&& !collected){
-                int num = (int)(Math.random()*960);
-                int num1 = (int)(Math.random()*560);
-                g.drawImage(healthpot,num,num1,null);
-                long t = 4;
-                if(player.playerRect().intersects(num,num1,healthpot.getWidth(),healthpot.getHeight())){
-                    player.heal(10);
-                    p=0;
-                    collected = true;
-                }
             }
             // draw score
             g.setFont(new Font("Courier New", Font.BOLD, 24));
@@ -139,12 +130,9 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener,
             }
 
         }else if(ez1.gethp()>0){
+            player.yes();
             won = false;
             lost = false;
-            if(!reset) {
-                player.MaxHealth();
-                reset = true;
-            }
             try{
                 background = ImageIO.read(new File("images/background2.png"));
             }catch(IOException e){
@@ -156,7 +144,7 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener,
             g.drawImage(background,0,0,null);
             g.drawImage(ez1.getbossImage(), 600, 200, null);// the order that things get "painted" matter; we put background down first
             if (player.playerRect().intersects(ez1.BossRect())) {
-                player.minus(100);
+                player.setHealth(0);
             }
             if (hp1 > ez1.gethp()) {
                 g.drawImage(slash, 500, 150, null);
@@ -194,9 +182,72 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener,
                 }
                 time++;
             }
-        }else{
+        }else if(ez2.gethp()>0){
+            player.setScore(2);
+            player.setSpeed(10);
+            try {
+                background = ImageIO.read(new File("images/background3.png"));
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+            g.drawImage(background,0,0,null);
+            g.drawImage(ez2.getbossImage(), 520,100,null);
             g.setFont(new Font("Courier New", Font.BOLD, 24));
-           g.drawString("You Win!",250,300);
+            g.setColor(Color.WHITE);
+            g.drawString("Clicks: " + click,20,100);
+            g.setFont(new Font("Courier New", Font.BOLD, 24));
+            g.setColor(Color.WHITE);
+            g.drawString("Boss health: " + ez2.gethp(),600,40);
+            g.drawImage(player.getPlayerImage(), player.getxCoord(), player.getyCoord(), null);
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Courier New", Font.BOLD, 24));
+            g.drawString(player.getName() + "'s Score: " + player.getScore(), 20, 40);
+            g.drawString("Time: " + time, 20, 70);
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Courier New", Font.BOLD, 24));
+            g.drawString("Health: " +player.getHealth(),20,130);
+            if(player.playerRect().intersects(ez2.BossRect())){
+                player.setHealth(0);
+            }
+            if (!player.alive() && !lost) {
+                g.setColor(Color.PINK);
+                g.setFont(new Font("Courier New", Font.BOLD, 100));
+                g.drawString("YOU LOSE!", 250, 300);
+                won = true;
+                player.setSpeed(0);
+            }
+            if(time%5==0){
+                y = (int)(Math.random()*560);
+                x = (int)(Math.random()*500);
+                q=(int)(Math.random()*560);
+                m=(int)(Math.random()*500);
+                f=(int)(Math.random()*560);
+                z=(int)(Math.random()*500);
+            }
+            if(time%5 != 0){
+                    g.drawImage(blast, x, y, null);
+                    g.drawImage(blast, m, q, null);
+                    g.drawImage(blast, z, f, null);
+                    if(player.playerRect().intersects(x,y,blast.getWidth()-40,blast.getHeight()-40) ||player.playerRect().intersects(m,q,blast.getWidth()-40,blast.getHeight()-40) || player.playerRect().intersects(z,f,blast.getWidth()-40,blast.getHeight()-40)){
+                    player.minus(.2);
+                }
+            }
+        }else{
+            try{
+                background = ImageIO.read(new File("images/background.png"));
+            }catch(IOException e){
+                System.out.println(e.getMessage());
+            }
+            timer.stop();
+            player.setScore(3);
+            g.drawImage(background,0,0,null);
+            g.setFont(new Font("Courier New", Font.BOLD, 40));
+            g.setColor(Color.WHITE);
+            g.drawString("You Won!", 50, 500);
+            g.drawString("You win this time....", 50, 400);
+            g.drawString( "Total Score: " + player.getScore(), 50, 100);
+            g.drawString("Time: " + time, 50, 200);
+            g.drawString("Clicks: " + click,50,300);
         }
 
         if (isFreezed) {
@@ -218,35 +269,47 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener,
         if (pressedKeys[87]) {
             player.moveUp();
         }
+        if(pressedKeys[67] && time>=p){
+            p = time+5;
+            if(player.getHealth()<=150) {
+                player.heal(50);
+            }else{
+                player.heal(200-player.getHealth());
+            }
+        }
 
         // player moves down (S)
         if (pressedKeys[83]) {
             player.moveDown();
         }
-        if(pressedKeys[90] && j%5 ==0){
+        if(pressedKeys[90] && time>=l){
+            l =  time+5;
             int x= player.getxCoord();
             int y = player.getyCoord();
             while(x<=960){
-              g.drawImage(zmove,x,y,null);
-              x+=1;
-              if(ez.BossRect().intersects(x,y,zmove.getWidth(),zmove.getHeight())){
-                  ez.minusHp(5);
-              }
+                g.drawImage(zmove,x,y,null);
+                x+=1;
+                if(ez.BossRect().intersects(x,y,zmove.getWidth(),zmove.getHeight())){
+                    ez.minusHp(1);
+                }
                 if(ez1.BossRect().intersects(x,y,zmove.getWidth(),zmove.getHeight())){
-                    ez1.minusHp(5);
+                    ez1.minusHp(1);
+                }
+                if(ez2.BossRect().intersects(x,y,zmove.getWidth(),zmove.getHeight())){
+                    ez2.minusHp(1);
                 }
             }
         }
-        if(pressedKeys[88]){
+        if(pressedKeys[88] && time>=k){
+            k = time+5;
             g.drawImage(xmove,600,200,null);
             if(ez.gethp()>0){
-                ez.minusHp(5);
+                ez.minusHp(500);
             }else if(ez1.gethp()>0){
-                ez1.minusHp(5);
+                ez1.minusHp(500);
+            }else if(ez2.gethp()>0){
+                ez2.minusHp((500));
             }
-        }
-        if(time>j){
-            j++;
         }
     }
 
@@ -277,6 +340,8 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener,
             ez.minus();
         }else if(ez1.gethp()>0){
             ez1.minus();
+        }else if(ez2.gethp()>0){
+            ez2.minus();
         }
         if(isFreezed == false) {
             Point mouseClickLocation = e.getPoint();
