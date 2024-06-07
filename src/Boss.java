@@ -18,7 +18,7 @@ public class Boss {
         }
     }
     public void minus(){
-        health -= 5000;
+        health -= 100;
     }
     public int gethp(){
         return health;
