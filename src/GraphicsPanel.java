@@ -246,7 +246,7 @@ public class GraphicsPanel extends JPanel implements KeyListener, MouseListener,
             g.drawString("You Won!", 50, 500);
             g.drawString("You win this time....", 50, 400);
             g.drawString( "Total Score: " + player.getScore(), 50, 100);
-            g.drawString("Time: " + time, 50, 200);
+            g.drawString("Time: " + time + " seconds", 50, 200);
             g.drawString("Clicks: " + click,50,300);
         }
 
